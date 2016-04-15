@@ -854,13 +854,13 @@ package_install
 echo "Tool packages check and install"
 xo_install
 node_setup
-#tools_setup
-#apache_setup
-#rvm_setup
-#mailcatcher_setup
-#php_setup
-#services_restart
-#mysql_setup
+tools_setup
+apache_setup
+rvm_setup
+mailcatcher_setup
+php_setup
+services_restart
+mysql_setup
 
 network_check
 
@@ -869,12 +869,12 @@ network_check
 #echo "Installing/updating wp-cli and debugging tools"
 
 #wp_cli
-#memcached_admin
-#opcached_status
-#webgrind_install
-#phpmyadmin_setup
+memcached_admin
+opcached_status
+webgrind_install
+phpmyadmin_setup
 
-#network_check
+network_check
 
 # VVV custom site import
 echo " "
