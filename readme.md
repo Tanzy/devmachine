@@ -118,5 +118,5 @@ Know how? Create a pull request!
 | MySQL   | `root` | `root` | [http://vvv.dev/database-admin/](http://vvv.dev/database-admin/) |
 
 ## Need Help?
-* Let us have it! Don't hesitate to open a new issue on GitHub if you run into
+* Let us have it! Don't hesitate to open a new issue if you run into
   trouble or have any tips that we need to know.
