@@ -2,3 +2,13 @@
 
 ### Vagrant ###
 .vagrant/
+
+
+# Ignore downloaded files
+www/default/database-admin/
+www/default/memcached-admin/
+www/default/opcache-status/
+www/default/webgrind/
+www/devsites/
+www/passanger.txt
+database/backups/

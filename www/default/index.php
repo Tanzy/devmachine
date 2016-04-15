@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Theme Juice Dashboard</title>
+  <title>Base Machine Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css">
@@ -141,15 +141,6 @@
 <nav class="nav">
   <ul class="nav__list">
     <li class="nav__item">
-      <a class="nav__link" href="https://github.com/ezekg/theme-juice-vvv">
-        <span class="icon-stack icon-stack--large fa-stack">
-          <i class="icon-stack__shape fa fa-circle fa-stack-2x"></i>
-          <i class="icon-stack__icon fa fa-github fa-stack-1x fa-inverse"></i>
-        </span>
-        Repository
-      </a>
-    </li>
-    <li class="nav__item">
       <a class="nav__link" href="/database-admin">
         <span class="icon-stack icon-stack--large fa-stack">
           <i class="icon-stack__shape fa fa-circle fa-stack-2x"></i>
@@ -185,6 +176,15 @@
         PHP Info
       </a>
     </li>
+    <li class="nav__item">
+      <a class="nav__link" href="http://vvv.dev:1080">
+        <span class="icon-stack icon-stack--large fa-stack">
+          <i class="icon-stack__shape fa fa-circle fa-stack-2x"></i>
+          <i class="icon-stack__icon fa fa-envelope fa-stack-1x"></i>
+        </span>
+        Mail Catcher
+      </a>
+    </li>
   </ul>
 </nav>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -195,6 +195,7 @@
       $.ajax("//vvv.dev").done(function() {
         $status.addClass("status--ok");
       }).fail(function() {
+        $status.removeClass("status--ok");
         $status.addClass("status--err");
       }).always(function() {
         $status.removeClass("status--loading");

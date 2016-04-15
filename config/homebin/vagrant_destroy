@@ -10,5 +10,10 @@
 if [[ -f /home/vagrant/bin/vagrant_destroy_custom ]]; then
 	vagrant_destroy_custom
 else
+	rm -rf /srv/www/default/database-admin
+	rm -rf /srv/www/default/memcached-admin
+	rm -rf /srv/www/default/opcache-status
+	rm -rf /srv/www/default/webgrind
+	rm -rf /srv/www/passanger.txt
 	db_backup
 fi

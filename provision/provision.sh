@@ -835,6 +835,55 @@ ssl_cert_setup() {
   done
 }
 
+passenger_setup(){
+  if [[ ! -f "/usr/bin/passenger-config" ]]; then
+  
+  # Install our PGP key and add HTTPS support for APT
+  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 561F9B9CAC40B2F7
+  apt-get install -y apt-transport-https ca-certificates
+
+  # Add our APT repository
+  sh -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger trusty main > /etc/apt/sources.list.d/passenger.list'
+  apt-get update
+
+  # Install Passenger + Apache module
+  apt-get install -y libapache2-mod-passenger
+  
+  # Enable Passenger
+  a2enmod passenger
+  # Restart Apache
+  apache2ctl restart
+  
+  fi
+  
+  echo "Check Passenger command via 'passenger-config about ruby-command'"
+  rm /vagrant/www/passanger.txt
+   
+  cat > /vagrant/www/passanger.txt <<'EOT'
+  
+  Sample apache2 config
+  <VirtualHost *:80>
+    ServerName yourserver.com
+
+    # Tell Apache and Passenger where your app's 'public' directory is
+    DocumentRoot /var/www/myapp/code/public
+
+    PassengerRuby /path-to-ruby
+
+    # Relax Apache security settings
+    <Directory /var/www/myapp/code/public>
+      Allow from all
+      Options -MultiViews
+      # Uncomment this if you're on Apache >= 2.4:
+      #Require all granted
+    </Directory>
+</VirtualHost>
+EOT
+  
+  passenger-config about ruby-command >> /vagrant/www/passanger.txt
+  
+}
+
 ### SCRIPT
 #set -xv
 
@@ -861,6 +910,8 @@ mailcatcher_setup
 php_setup
 services_restart
 mysql_setup
+
+passenger_setup
 
 network_check
 
