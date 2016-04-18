@@ -884,6 +884,59 @@ EOT
   
 }
 
+elasticsearch_setup(){
+  echo ">>> Checking for Elasticsearch"
+	exists_elasticsearch="$(service elasticsearch status)"
+	echo "${exists_elasticsearch}"
+	if [[ " * elasticsearch is running" != "${exists_elasticsearch}" && " * elasticsearch is not running" != "${exists_elasticsearch}" ]]; then
+		echo ">>> Installing Elasticsearch"
+		
+		# Set some variables
+		ELASTICSEARCH_VERSION=2.0.0 # Check https://www.elastic.co/downloads/elasticsearch for latest version
+		
+		# Install prerequisite: Java
+		# -qq implies -y --force-yes
+		apt-get update
+		apt-get install -qq openjdk-7-jre-headless
+		
+		wget --quiet https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-$ELASTICSEARCH_VERSION.deb
+		dpkg -i elasticsearch-$ELASTICSEARCH_VERSION.deb
+		rm elasticsearch-$ELASTICSEARCH_VERSION.deb
+		
+		cp /srv/config/elasticsearch-config/elasticsearch.yml /etc/elasticsearch/elasticsearch.yml
+		
+		service elasticsearch restart
+		
+		# Configure to start up Elasticsearch automatically
+		/usr/share/elasticsearch/bin/plugin install royrusso/elasticsearch-hq
+		/usr/share/elasticsearch/bin/plugin install lmenezes/elasticsearch-kopf
+
+	fi
+  
+  if [ ! -f /srv/kibana/bin/kibana ]; then
+		# Install kibana
+		echo "Installing Kibana..."
+		mkdir -p /srv/kibana
+		
+		wget https://download.elastic.co/kibana/kibana/kibana-4.2.0-linux-x64.tar.gz
+		
+		tar xvf kibana-*.tar.gz
+		
+		cp -R kibana-4*/* /srv/kibana/
+		
+		rm -rf kibana-4*		
+		
+	fi
+	
+	if [ ! -f /etc/init.d/kibana ]; then
+		cp /srv/config/elasticsearch-config/kibana /etc/init.d/kibana4
+		# below is to fix the problem of CRLF (DOS format) to LF format
+		perl -pi -e 's/\r\n/\n/g' /etc/init.d/kibana4
+		chmod +x /etc/init.d/kibana4
+		update-rc.d kibana4 defaults 99 10
+	fi
+}
+
 ### SCRIPT
 #set -xv
 
@@ -912,6 +965,8 @@ services_restart
 mysql_setup
 
 passenger_setup
+
+elasticsearch_setup
 
 network_check
 

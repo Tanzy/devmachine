@@ -187,6 +187,8 @@ Vagrant.configure("2") do |config|
   if vagrant_version >= "1.6.0"
     config.vm.provision :shell, :inline => "sudo service mysql restart", :run => "always"
     config.vm.provision :shell, :inline => "sudo service apache2 restart", :run => "always"
+    config.vm.provision :shell, :inline => "sudo service elasticsearch restart", :run => "always"
+    config.vm.provision :shell, :inline => "sudo service kibana4 restart", :run => "always"
   end
 
   # Vagrant Triggers
