@@ -3,6 +3,8 @@
 ### Vagrant ###
 .vagrant/
 
+# ignore JetBrains files
+.idea
 
 # Ignore downloaded files
 www/default/database-admin/
