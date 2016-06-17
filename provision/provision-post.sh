@@ -1,7 +1,8 @@
+#!/bin/bash
+
 # VVV custom site import
 echo " "
 echo "VVV custom site import"
-custom_vvv
 
 custom_vvv() {
   # Find new sites to setup.
@@ -53,3 +54,5 @@ custom_vvv() {
     done < "$hostfile"
   done
 }
+
+custom_vvv

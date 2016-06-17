@@ -189,6 +189,7 @@ Vagrant.configure("2") do |config|
     config.vm.provision :shell, :inline => "sudo service apache2 restart", :run => "always"
     config.vm.provision :shell, :inline => "sudo service elasticsearch restart", :run => "always"
     config.vm.provision :shell, :inline => "sudo service kibana4 restart", :run => "always"
+    config.vm.provision :shell, :inline => "sudo service rabbitmq-server restart", :run => "always"
   end
 
   # Vagrant Triggers

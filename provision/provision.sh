@@ -888,6 +888,34 @@ elasticsearch_setup(){
 	fi
 }
 
+rabbitMq_install() {
+  # Install rabbitmq
+  if [[ ! -f "/etc/default/rabbitmq-server" ]]; then
+    echo "Installing RabbitMq"
+    
+    echo "Updating sources"
+    sh -c 'echo deb http://www.rabbitmq.com/debian/ testing main >> /etc/apt/sources.list'
+    sh -c 'echo deb http://packages.erlang-solutions.com/ubuntu trusty contrib >> /etc/apt/sources.list'
+
+    echo "Adding verification key"
+    wget -O- https://www.rabbitmq.com/rabbitmq-release-signing-key.asc |  apt-key add -
+    wget -c -O- http://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc |  apt-key add -
+    
+    echo "Apt Update"
+    #apt-key update
+    apt-get update
+
+    echo "Install Erlang"
+    apt-get install erlang-base -y
+
+    echo "Install RabbitMq"
+    apt-get install -y rabbitmq-server
+
+    rabbitmq-plugins enable rabbitmq_management
+
+  fi
+}
+
 ### SCRIPT
 #set -xv
 
@@ -918,6 +946,8 @@ mysql_setup
 passenger_setup
 
 elasticsearch_setup
+
+rabbitMq_install
 
 network_check
 
