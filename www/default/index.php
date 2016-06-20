@@ -216,6 +216,15 @@
       </a>
     </li>
     
+    <li class="nav__item">
+      <a class="nav__link" href="http://vvv.dev:15672">
+        <span class="icon-stack icon-stack--large fa-stack">
+          <i class="icon-stack__shape fa fa-circle fa-stack-2x"></i>
+          <i class="icon-stack__icon fa fa-line-chart fa-stack-1x"></i>
+        </span>
+        RabbitMq
+      </a>
+    </li>
   </ul>
 </nav>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
