@@ -902,7 +902,6 @@ rabbitMq_install() {
     wget -c -O- http://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc |  apt-key add -
     
     echo "Apt Update"
-    #apt-key update
     apt-get update
 
     echo "Install Erlang"
@@ -912,6 +911,12 @@ rabbitMq_install() {
     apt-get install -y rabbitmq-server
 
     rabbitmq-plugins enable rabbitmq_management
+
+    echo "Add RabbitMq User"
+    service rabbitmq-server restart
+    rabbitmqctl add_user vagrant vagrant
+    rabbitmqctl set_user_tags vagrant administrator
+    rabbitmqctl set_permissions -p / vagrant ".*" ".*" ".*"
 
   fi
 }
