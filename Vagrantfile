@@ -197,7 +197,7 @@ Vagrant.configure("2") do |config|
   # put into this file. This provides a good opportunity to install additional packages
   # without having to replace the entire default provisioning script.
   if File.exist?(File.join(vagrant_dir,'provision','provision-post.sh')) then
-    config.vm.provision :shell, :path => File.join( "provision", "provision-post.sh" )
+    config.vm.provision :shell, :path => File.join( "provision", "provision-post.sh" ), run: "always"
   end
 
   # Always start MySQL on boot, even when not running the full provisioner
