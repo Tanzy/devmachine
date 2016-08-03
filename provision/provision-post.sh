@@ -56,19 +56,20 @@ custom_basebox() {
 }
 
 ssl_cert_setup() {
-  echo "Adding self-signed SSL certs"
+  echo "Adding self-signed SSL certs"  >> /srv/log/ssl-create.log
   sites=$(cat /etc/apache2/custom-sites/*.conf | xo '/\*:443.*?ServerName\s(www)?\.?([-.0-9A-Za-z]+)/$1?:www.$2/mis')
-
+  echo "Sites = $sites"   >> /srv/log/ssl-create.log 
   # Install a cert for each domain
   for site in $sites; do
-    if [[ $site =~ "localhost" ]] || [[ ! $site =~ ".dev" ]]; then
+    if [[ $site =~ "localhost" ]] || [[ ! $site =~ ".dev" && ! $site =~ ".vm" ]] ; then
+      echo "$site not valid " >> /srv/log/ssl-create.log
       continue
     fi
 
     domain=$(echo "$site" | sed "s/^www.//")
 
     if [[ -f "/etc/ssl/certs/$domain.pem" ]]; then
-      echo " * Cert for $domain already exists"
+      echo " * Cert for $domain already exists" >> /srv/log/ssl-create.log
       continue
     fi
 
@@ -82,7 +83,7 @@ ssl_cert_setup() {
     mv "$domain.pem" /etc/ssl/certs/
     rm "$domain.csr"
 
-    echo " * Created cert for $domain"
+    echo " * Created cert for $domain"  >> /srv/log/ssl-create.log
   done
 }
 
