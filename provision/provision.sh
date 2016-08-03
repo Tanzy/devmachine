@@ -388,10 +388,12 @@ apache_setup() {
 
   # Copy Apache configuration from local
   rsync -rvzh "/srv/config/apache-config/apache2.conf" "/etc/apache2/apache2.conf"
+  rsync -rvzh "/srv/config/apache-config/ports.conf" "/etc/apache2/ports.conf"
   rsync -rvzh "/srv/config/apache-config/httpd.conf" "/etc/apache2/httpd.conf"
   rsync -rvzh --delete "/srv/config/apache-config/sites-available/" "/etc/apache2/sites-available/"
 
   echo " * /srv/config/apache-config/apache2.conf         -> /etc/apache2/apache2.conf"
+  echo " * /srv/config/apache-config/ports.conf         -> /etc/apache2/ports.conf"
   echo " * /srv/config/apache-config/httpd.conf           -> /etc/apache2/httpd.conf"
   echo " * /srv/config/apache-config/available-sites/     -> /etc/apache2/availablecustom-sites/"
   
@@ -400,7 +402,7 @@ apache_setup() {
   a2ensite default.conf 
 
   # Configure Apache
-  a2enmod actions fastcgi alias
+  a2enmod actions fastcgi alias proxy_http
 
   # Enable mod_rewrite
   a2enmod rewrite
