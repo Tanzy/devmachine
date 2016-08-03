@@ -10,11 +10,28 @@ Vagrant.configure("2") do |config|
   # with possible backward compatible issues.
   vagrant_version = Vagrant::VERSION.sub /^v/, ""
 
+
+  # Default Ubuntu Box
+  #
+  # This box is provided by Ubuntu vagrantcloud.com and is a nicely sized (332MB)
+  # box containing the Ubuntu 14.04 Trusty 64 bit release. Once this box is downloaded
+  # to your host computer, it is cached for future use under the specified box name.
+  config.vm.box = "boxcutter/ubuntu1404"
+
   # Configurations from 1.0.x can be placed in Vagrant 1.1.x specs like the following.
   # Configuration options for the VMware Fusion provider.
-  config.vm.provider :vmware_fusion do |v|
+  config.vm.provider :vmware_fusion do |v, override|
+    override.vm.box_version = "2.0.13"
     v.vmx["memsize"] = "1024"
     v.vmx["numvcpus"] = "1"
+  end
+
+  config.vm.provider "parallels" do |prl, override|
+    prl.name = "basebox"
+    prl.update_guest_tools = true
+    override.vm.box = "parallels/ubuntu-14.04"
+    prl.memory = 1024
+    prl.cpus = 2
   end
 
   # SSH Agent Forwarding
@@ -23,15 +40,8 @@ Vagrant.configure("2") do |config|
   # on your host machine inside the guest. See the manual for `ssh-add`.
   config.ssh.forward_agent = true
 
-  # Default Ubuntu Box
-  #
-  # This box is provided by Ubuntu vagrantcloud.com and is a nicely sized (332MB)
-  # box containing the Ubuntu 14.04 Trusty 64 bit release. Once this box is downloaded
-  # to your host computer, it is cached for future use under the specified box name.
-  config.vm.box = "boxcutter/ubuntu1404"
-  config.vm.box_version = "2.0.13"
 
-  config.vm.hostname = "vvv"
+  config.vm.hostname = "basebox"
   
   if Vagrant.has_plugin?("vagrant-cachier")
     # Configure cached packages to be shared between instances of the same base box.
@@ -47,16 +57,16 @@ Vagrant.configure("2") do |config|
   # be aware of the domains specified below. Watch the provisioning script as you may need to
   # enter a password for Vagrant to access your hosts file.
   #
-  # By default, we'll include the domains set up by VVV through the vvv-hosts file
+  # By default, we'll include the domains set up by basebox through the basebox-hosts file
   # located in the www/ directory.
   #
-  # Other domains can be automatically added by including a vvv-hosts file containing
+  # Other domains can be automatically added by including a basebox-hosts file containing
   # individual domains separated by whitespace in subdirectories of www/.
   if defined? VagrantPlugins::HostsUpdater
-    # Recursively fetch the paths to all vvv-hosts files under the www/ directory.
-    paths = Dir[File.join(vagrant_dir, "www", "**", "vvv-hosts")]
+    # Recursively fetch the paths to all basebox-hosts files under the www/ directory.
+    paths = Dir[File.join(vagrant_dir, "www", "**", "basebox-hosts")]
 
-    # Parse the found vvv-hosts files for host names.
+    # Parse the found basebox-hosts files for host names.
     hosts = paths.map do |path|
       # Read line from file and remove line breaks
       lines = File.readlines(path).map(&:chomp)
@@ -83,7 +93,7 @@ Vagrant.configure("2") do |config|
   # should be changed. If more than one VM is running, including other
   # Vagrant machines, different subnets should be used for each.
   #
-  config.vm.network :private_network, :id => "vvv_primary", :ip => "192.168.57.4"
+  config.vm.network :private_network, :id => "basebox_primary", :ip => "10.37.132.4"
 
   # Drive mapping
   #
@@ -126,12 +136,20 @@ Vagrant.configure("2") do |config|
   # directory inside the VM will be created for some generated log files.
   config.vm.synced_folder "log/", "/srv/log", :owner => "vagrant", :group => "www-data"
 
+    # /srv/letsencrypt/
+  #
+  # If a server-conf directory exists in the same directory as your Vagrantfile,
+  # a mapped directory inside the VM will be created that contains these files.
+  # This directory is currently used to maintain various config files for php and
+  # Apache as well as any pre-existing database files.
+  config.vm.synced_folder "letsencrypt/", "/srv/letsencrypt"
+
   # /srv/www/
   #
   # If a www directory exists in the same directory as your Vagrantfile, a mapped directory
   # inside the VM will be created that acts as the default location for Apache sites. Put all
   # of your project files here that you want to access through the web server
-  config.vm.synced_folder "www/", "/srv/www/", :owner => "vagrant", :group => "www-data", :mount_options => ["dmode=775", "fmode=774"]
+  config.vm.synced_folder "www/", "/srv/www/"
 
   # Fix 'no tty' output
   config.vm.provision "fix-no-tty", type: "shell" do |s|
@@ -203,19 +221,19 @@ Vagrant.configure("2") do |config|
   # scripting. See the individual files in config/homebin/ for details.
   if defined? VagrantPlugins::Triggers
     config.trigger.after :up, :stdout => true do
-      run "vagrant ssh -c 'vagrant_up'"
+      #run "vagrant ssh -c 'vagrant_up'"
     end
     config.trigger.before :reload, :stdout => true do
-      run "vagrant ssh -c 'vagrant_halt'"
+      #run "vagrant ssh -c 'vagrant_halt'"
     end
     config.trigger.after :reload, :stdout => true do
-      run "vagrant ssh -c 'vagrant_up'"
+      #run "vagrant ssh -c 'vagrant_up'"
     end
     config.trigger.before :halt, :stdout => true do
-      run "vagrant ssh -c 'vagrant_halt'"
+      #run "vagrant ssh -c 'vagrant_halt'"
     end
     config.trigger.before :suspend, :stdout => true do
-      run "vagrant ssh -c 'vagrant_suspend'"
+      #run "vagrant ssh -c 'vagrant_suspend'"
     end
     config.trigger.before :destroy, :stdout => true do
       run "vagrant ssh -c 'vagrant_destroy'"

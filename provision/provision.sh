@@ -178,7 +178,7 @@ profile_setup() {
   echo " * /srv/config/subversion-servers                  -> /home/vagrant/.subversion/servers"
   echo " * /srv/config/homebin                             -> /home/vagrant/bin"
 
-  # If a bash_prompt file exists in the VVV config/ directory, copy to the VM.
+  # If a bash_prompt file exists in the basebox config/ directory, copy to the VM.
   if [[ -f "/srv/config/bash_prompt" ]]; then
     rsync -rvzh "/srv/config/bash_prompt" "/home/vagrant/.bash_prompt"
     echo " * /srv/config/bash_prompt                          -> /home/vagrant/.bash_prompt"
@@ -219,17 +219,17 @@ package_install() {
   # Postfix
   #
   # Use debconf-set-selections to specify the selections in the postfix setup. Set
-  # up as an 'Internet Site' with the host name 'vvv'. Note that if your current
+  # up as an 'Internet Site' with the host name 'basebox'. Note that if your current
   # Internet connection does not allow communication over port 25, you will not be
   # able to send mail, even with postfix installed.
   echo postfix postfix/main_mailer_type select Internet Site | debconf-set-selections
-  echo postfix postfix/mailname string vvv | debconf-set-selections
+  echo postfix postfix/mailname string basebox | debconf-set-selections
 
   # Disable ipv6 as some ISPs/mail servers have problems with it
   echo "inet_protocols = ipv4" >> "/etc/postfix/main.cf"
 
   # Provide our custom apt sources before running `apt-get update`
-  ln -sf /srv/config/apt-sources.list /etc/apt/sources.list.d/vvv-sources.list
+  ln -sf /srv/config/apt-sources.list /etc/apt/sources.list.d/basebox-sources.list
   echo "Linked custom apt sources"
 
   if [[ ${#apt_package_install_list[@]} = 0 ]]; then
@@ -370,27 +370,38 @@ node_setup() {
 
 apache_setup() {
   # Used to to ensure proper services are started on `vagrant up`
-  rsync -rvzh /srv/config/init/vvv-start.conf /etc/init/vvv-start.conf
+  rsync -rvzh /srv/config/init/basebox-start.conf /etc/init/basebox-start.conf
 
-  echo " * /srv/config/init/vvv-start.conf                -> /etc/init/vvv-start.conf"
+  echo " * /srv/config/init/basebox-start.conf                -> /etc/init/basebox-start.conf"
 
   # If a custom httpd.conf file is not found, create an empty one
   if [[ ! -f "/srv/config/apache-config/httpd.conf" ]]; then
     touch "/srv/config/apache-config/httpd.conf"
   fi
 
+  if [[ ! -d "/etc/apache2/custom-sites" ]]; then
+    mkdir /etc/apache2/custom-sites
+  fi
+
+  # Disable default site
+  a2dissite 000-default.conf
+
   # Copy Apache configuration from local
   rsync -rvzh "/srv/config/apache-config/apache2.conf" "/etc/apache2/apache2.conf"
   rsync -rvzh "/srv/config/apache-config/httpd.conf" "/etc/apache2/httpd.conf"
-  rsync -rvzh --delete "/srv/config/apache-config/sites/" "/etc/apache2/custom-sites/"
+  rsync -rvzh --delete "/srv/config/apache-config/sites-available/" "/etc/apache2/sites-available/"
 
   echo " * /srv/config/apache-config/apache2.conf         -> /etc/apache2/apache2.conf"
   echo " * /srv/config/apache-config/httpd.conf           -> /etc/apache2/httpd.conf"
-  echo " * /srv/config/apache-config/sites/               -> /etc/apache2/custom-sites/"
+  echo " * /srv/config/apache-config/available-sites/     -> /etc/apache2/availablecustom-sites/"
 
   echo " "
   echo "Installing/configuring SSL certs"
   ssl_cert_setup
+  
+  echo " "
+  echo "Enable Custom Default Site"
+  a2ensite default.conf 
 
   # Configure Apache
   a2enmod actions fastcgi alias
@@ -400,7 +411,7 @@ apache_setup() {
 
   # Enable SSL
   a2enmod ssl
-  a2ensite default-ssl.conf
+  #a2ensite default-ssl.conf
 
   # Allow phpbrew to access apache files
   chmod -R oga+rw /usr/lib/apache2/modules
@@ -474,7 +485,7 @@ if [[ ! "$VERSION" =~ ^5 ]]; then
   echo "Right now, only PHP version 5.x is supported."
   echo "Do you know how to configure PHP 7.x (or older versions of PHP) using"
   echo "PHPBrew? Help out by submitting a pull request at:"
-  echo "https://github.com/ezekg/theme-juice-vvv"
+  echo "https://github.com/ezekg/theme-juice-basebox"
   exit 1
 fi
 
@@ -755,36 +766,7 @@ xo_install() {
   fi
 }
 
-ssl_cert_setup() {
-  echo "Adding self-signed SSL certs"
-  sites=$(cat /etc/apache2/custom-sites/*.conf | xo '/\*:443.*?ServerName\s(www)?\.?([-.0-9A-Za-z]+)/$1?:www.$2/mis')
 
-  # Install a cert for each domain
-  for site in $sites; do
-    if [[ $site =~ "localhost" ]] || [[ ! $site =~ ".dev" ]]; then
-      continue
-    fi
-
-    domain=$(echo "$site" | sed "s/^www.//")
-
-    if [[ -f "/etc/ssl/certs/$domain.pem" ]]; then
-      echo " * Cert for $domain already exists"
-      continue
-    fi
-
-    openssl genrsa -des3 -passout pass:x -out "$domain.pass.key" 2048 &>/dev/null
-    openssl rsa -passin pass:x -in "$domain.pass.key" -out "$domain.key" &>/dev/null
-    rm "$domain.pass.key"
-    openssl req -new -key "$domain.key" -out "$domain.csr" -subj "/C=US/ST=New York/L=New York City/O=Evil Corp/OU=IT Department/CN=$domain" &>/dev/null
-    openssl x509 -req -days 365 -in "$domain.csr" -signkey "$domain.key" -out "$domain.pem" &>/dev/null
-
-    mv "$domain.key" /etc/ssl/private/
-    mv "$domain.pem" /etc/ssl/certs/
-    rm "$domain.csr"
-
-    echo " * Created cert for $domain"
-  done
-}
 
 passenger_setup(){
   if [[ ! -f "/usr/bin/passenger-config" ]]; then
@@ -921,6 +903,63 @@ rabbitMq_install() {
   fi
 }
 
+
+ssl_cert_setup() {
+  echo "Adding self-signed SSL certs"
+  sites=$(cat /etc/apache2/custom-sites/*.conf | xo '/\*:443.*?ServerName\s(www)?\.?([-.0-9A-Za-z]+)/$1?:www.$2/mis')
+
+  # Install a cert for each domain
+  for site in $sites; do
+    if [[ $site =~ "localhost" ]] || [[ ! $site =~ ".dev" ]]; then
+      continue
+    fi
+
+    domain=$(echo "$site" | sed "s/^www.//")
+
+    if [[ -f "/etc/ssl/certs/$domain.pem" ]]; then
+      echo " * Cert for $domain already exists"
+      continue
+    fi
+
+    openssl genrsa -des3 -passout pass:x -out "$domain.pass.key" 2048 &>/dev/null
+    openssl rsa -passin pass:x -in "$domain.pass.key" -out "$domain.key" &>/dev/null
+    rm "$domain.pass.key"
+    openssl req -new -key "$domain.key" -out "$domain.csr" -subj "/C=US/ST=New York/L=New York City/O=Evil Corp/OU=IT Department/CN=$domain" &>/dev/null
+    openssl x509 -req -days 365 -in "$domain.csr" -signkey "$domain.key" -out "$domain.pem" &>/dev/null
+
+    mv "$domain.key" /etc/ssl/private/
+    mv "$domain.pem" /etc/ssl/certs/
+    rm "$domain.csr"
+
+    echo " * Created cert for $domain"
+  done
+}
+
+letsEncrypt_install() {
+  if [[ ! -d "/srv/letsencrypt" ]]; then
+      mkdir /srv/letsencrypt
+  fi
+
+  cd /srv/letsencrypt
+
+  # Download and extract Lets Encrypt
+  if [[ ! -f "/srv/letsencrypt/certbot-auto" ]]; then
+    echo -e "\nDownloading LetsEncrypt Certbot"
+    
+    wget https://dl.eff.org/certbot-auto
+    
+  else
+   
+    echo "LetsEncrypt Certbot already installed."
+   
+  fi
+  
+  chmod a+x certbot-auto
+  wget -O -  https://get.acme.sh | sh
+  #./certbot-auto --apache --dry-run 
+
+}
+
 ### SCRIPT
 #set -xv
 
@@ -957,10 +996,9 @@ rabbitMq_install
 network_check
 
 # WP-CLI and debugging tools
-#echo " "
-#echo "Installing/updating wp-cli and debugging tools"
-
-#wp_cli
+echo " "
+echo "Installing/updating wp-cli and debugging tools"
+wp_cli
 memcached_admin
 opcached_status
 webgrind_install
@@ -968,6 +1006,8 @@ phpmyadmin_setup
 
 network_check
 
+#letsEncrypt_install
+#network_check
 
 
 #set +xv
@@ -975,4 +1015,4 @@ network_check
 end_seconds="$(date +%s)"
 echo "-----------------------------"
 echo "Provisioning complete in "$((${end_seconds} - ${start_seconds}))" seconds"
-echo "For further setup instructions, visit http://vvv.dev"
+echo "For further setup instructions, visit http://basebox.dev"

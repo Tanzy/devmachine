@@ -1,4 +1,5 @@
-This is a folk from https://github.com/ezekg/theme-juice-vvv. However I have added the Phusion Passenger Library
+This is a folk from https://github.com/ezekg/theme-juice-basebox, most of the text from this Readme is taken directly from this Git Repository.
+ However I have added the Phusion Passenger Library
 
 ## Getting Started
 
@@ -19,7 +20,7 @@ vagrant up
 ## What do you get?
 | Name                                                             | Version   | Description                                                                                                                                                                                                            |
 | :--------------------------------------------------------------- | :-------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Ubuntu](http://www.ubuntu.com/)                                 | `14.04.3` | Ubuntu is a Debian-based Linux operating system and distribution for personal computers, smartphones and network servers.                                                                                              |
+| [Ubuntu](http://www.ubuntu.com/)                                 | `14.04`   | Ubuntu is a Debian-based Linux operating system and distribution for personal computers, smartphones and network servers.                                                                                                |
 | [Apache](http://httpd.apache.org/)                               | `2.4.x`   | The Apache HTTP Server, colloquially called Apache, is the world's most used web server software.                                                                                                                      |
 | [PHP](http://php.net/)                                           | `5.5.x`   | PHP (recursive acronym for PHP: Hypertext Preprocessor) is a widely-used open source general-purpose scripting language that is especially suited for web development and can be embedded into HTML.                   |
 | [PHPBrew](https://github.com/phpbrew/phpbrew)                    | `stable`  | PHPBrew allows you to easily switch PHP versions.                                                                                                                                                                      |
@@ -44,11 +45,16 @@ vagrant up
 | [xo](https://github.com/ezekg/xo)                                | `stable`  | xo is a command line utility that takes an input string from stdin and formats the regexp matches.                                                                                                                     |
 | [git](http://git-scm.com/)                                       | `1.8.x`   | Git is a widely used source code management system for software development. It is a distributed revision control system with an emphasis on speed, data integrity, and support for distributed, non-linear workflows. |
 | [ngrep](http://ngrep.sourceforge.net/usage.html)                 | `1.45.x`  | ngrep (network grep) is a network packet analyzer.                                                                                                                                                                     |
-| [dos2unix](http://dos2unix.sourceforge.net/)                     | `6.0.x`   | dos2unix converts text files with DOS or Mac line endings to Unix line endings and vice versa.                                                                                                                         |                                                                                                                                                                              |
+| [dos2unix](http://dos2unix.sourceforge.net/)                     | `6.0.x`   | dos2unix converts text files with DOS or Mac line endings to Unix line endings and vice versa.                                                                                                                         |
+| [passenger](http://phusionpassenger.com/)                        | `stable`  | Phusion Passenger for running Node & Ruby in Apache                                                                                                                                                                    |
+| [elasticsearch](https://www.elastic.co/downloads/elasticsearch)  | `2.0`     | Elasticsearch                                                                                                                                                                                                          |
+| [RabbitMq](http://www.rabbitmq.com)                              | `stable`  | RabbitMq login on using Vagrant Vagrant                                                                                                                                                                                |
+                                                                                                                                                                                                         |   
+
 
 ## Dashboard
 You can view things such as a PHP `phpinfo()` dump, phpMemcachedAdmin, phpMyAdmin,
-Webgrind and more through the [main dashboard](http://vvv.dev/).
+Webgrind and more through the [main dashboard](http://basebox.dev/).
 
 ## Switching PHP versions
 Create a new file called `provision/provision-post.sh` and add the PHP version
@@ -72,9 +78,7 @@ end it is a lot faster. If you'd like to permanently use a specific PHP version,
 you should use the `provision-post.sh` method, as that will persist even if
 the VM is destroyed and re-created.
 
-_Currently, this feature is limited to **only** PHP `5.x`. I haven't been able
-to find a way to consistently configure other versions with Apache/MySQL. If
-you have the chops, I'd love the help._
+_Currently, this feature is limited to **only** PHP `5.x`. 
 
 ## Automatically generated self-signed SSL certs
 When a `conf` file within `config/apache-config/sites/` contains a virtual host with
@@ -115,7 +119,7 @@ Know how? Create a pull request!
 ## Credentials and Such
 | Program | User   | Pass   | Dashboard                                                        |
 | :------ | :----- | :----- | :--------------------------------------------------------------- |
-| MySQL   | `root` | `root` | [http://vvv.dev/database-admin/](http://vvv.dev/database-admin/) |
+| MySQL   | `root` | `root` | [http://basebox.dev/database-admin/](http://basebox.dev/database-admin/) |
 
 ## Need Help?
 * Let us have it! Don't hesitate to open a new issue if you run into

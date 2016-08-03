@@ -177,7 +177,7 @@
       </a>
     </li>
     <li class="nav__item">
-      <a class="nav__link" href="http://vvv.dev:1080">
+      <a class="nav__link" href="http://basebox.dev:1080">
         <span class="icon-stack icon-stack--large fa-stack">
           <i class="icon-stack__shape fa fa-circle fa-stack-2x"></i>
           <i class="icon-stack__icon fa fa-envelope fa-stack-1x"></i>
@@ -187,7 +187,7 @@
     </li>
     
     <li class="nav__item">
-      <a class="nav__link" href="http://vvv.dev:9200/_plugin/hq">
+      <a class="nav__link" href="http://basebox.dev:9200/_plugin/hq">
         <span class="icon-stack icon-stack--large fa-stack">
           <i class="icon-stack__shape fa fa-circle fa-stack-2x"></i>
           <i class="icon-stack__icon fa fa-server fa-stack-1x"></i>
@@ -197,7 +197,7 @@
     </li>
     
     <li class="nav__item">
-      <a class="nav__link" href="http://vvv.dev:9200/_plugin/kopf">
+      <a class="nav__link" href="http://basebox.dev:9200/_plugin/kopf">
         <span class="icon-stack icon-stack--large fa-stack">
           <i class="icon-stack__shape fa fa-circle fa-stack-2x"></i>
           <i class="icon-stack__icon fa fa-server fa-stack-1x"></i>
@@ -207,7 +207,7 @@
     </li>
     
     <li class="nav__item">
-      <a class="nav__link" href="http://vvv.dev:5601">
+      <a class="nav__link" href="http://basebox.dev:5601">
         <span class="icon-stack icon-stack--large fa-stack">
           <i class="icon-stack__shape fa fa-circle fa-stack-2x"></i>
           <i class="icon-stack__icon fa fa-line-chart fa-stack-1x"></i>
@@ -217,7 +217,7 @@
     </li>
     
     <li class="nav__item">
-      <a class="nav__link" href="http://vvv.dev:15672">
+      <a class="nav__link" href="http://basebox.dev:15672">
         <span class="icon-stack icon-stack--large fa-stack">
           <i class="icon-stack__shape fa fa-circle fa-stack-2x"></i>
           <i class="icon-stack__icon fa fa-line-chart fa-stack-1x"></i>
@@ -232,7 +232,7 @@
   jQuery(document).ready(function($) {
     $status = $(".status");
     setInterval(function() {
-      $.ajax("//vvv.dev").done(function() {
+      $.ajax("//basebox.dev").done(function() {
         $status.addClass("status--ok");
       }).fail(function() {
         $status.removeClass("status--ok");
