@@ -402,7 +402,7 @@ apache_setup() {
   a2ensite default.conf 
 
   # Configure Apache
-  a2enmod actions fastcgi alias proxy_http
+  a2enmod actions fastcgi alias proxy_http remoteip
 
   # Enable mod_rewrite
   a2enmod rewrite

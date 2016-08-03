@@ -203,11 +203,15 @@ Vagrant.configure("2") do |config|
   # Always start MySQL on boot, even when not running the full provisioner
   # (run: "always" support added in 1.6.0)
   if vagrant_version >= "1.6.0"
-    config.vm.provision :shell, :inline => "sudo service mysql restart", :run => "always"
-    config.vm.provision :shell, :inline => "sudo service apache2 restart", :run => "always"
-    config.vm.provision :shell, :inline => "sudo service elasticsearch restart", :run => "always"
-    config.vm.provision :shell, :inline => "sudo service kibana4 restart", :run => "always"
-    config.vm.provision :shell, :inline => "sudo service rabbitmq-server restart", :run => "always"
+    if File.exist?(File.join(vagrant_dir,'provision','restartServices.sh')) then
+      config.vm.provision :shell, :path => File.join( "provision", "restartServices.sh" ), run: "always"
+    else
+      config.vm.provision :shell, :inline => "sudo service mysql restart", :run => "always"
+      config.vm.provision :shell, :inline => "sudo service apache2 restart", :run => "always"
+      config.vm.provision :shell, :inline => "sudo service elasticsearch restart", :run => "always"
+      config.vm.provision :shell, :inline => "sudo service kibana4 restart", :run => "always"
+      config.vm.provision :shell, :inline => "sudo service rabbitmq-server restart", :run => "always"
+    end
   end
 
   # Vagrant Triggers

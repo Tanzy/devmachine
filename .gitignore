@@ -15,3 +15,5 @@ www/devsites/
 www/passanger.txt
 database/backups/
 /www/wp-cli
+!/log/README.md
+/log
