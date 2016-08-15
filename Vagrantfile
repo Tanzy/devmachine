@@ -136,14 +136,6 @@ Vagrant.configure("2") do |config|
   # directory inside the VM will be created for some generated log files.
   config.vm.synced_folder "log/", "/srv/log", :owner => "vagrant", :group => "www-data"
 
-    # /srv/letsencrypt/
-  #
-  # If a server-conf directory exists in the same directory as your Vagrantfile,
-  # a mapped directory inside the VM will be created that contains these files.
-  # This directory is currently used to maintain various config files for php and
-  # Apache as well as any pre-existing database files.
-  config.vm.synced_folder "letsencrypt/", "/srv/letsencrypt"
-
   # /srv/www/
   #
   # If a www directory exists in the same directory as your Vagrantfile, a mapped directory

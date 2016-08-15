@@ -600,12 +600,15 @@ rvm_setup() {
   else
     # RVM key D39DC0E3
     # Signatures introduced in 1.26.0
-    gpg -q --no-tty --batch --keyserver "hkp://keyserver.ubuntu.com:80" --recv-keys D39DC0E3
-    gpg -q --no-tty --batch --keyserver "hkp://keyserver.ubuntu.com:80" --recv-keys BF04FF17
+    sudo gpg -q --no-tty --batch --keyserver "hkp://keyserver.ubuntu.com:80" --recv-keys D39DC0E3
+    sudo gpg -q --no-tty --batch --keyserver "hkp://keyserver.ubuntu.com:80" --recv-keys BF04FF17
 
     printf " * RVM [not installed]\n Installing from source"
-    curl --silent -L "https://get.rvm.io" | bash -s stable --ruby
+    sudo curl --silent -L "https://get.rvm.io" | bash -s stable --ruby
     source "/usr/local/rvm/scripts/rvm"
+
+    # Add the vagrant user to the RVM group
+    usermod -a -G rvm vagrant
   fi
 
   # Install bundler gem
