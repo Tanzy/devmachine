@@ -360,7 +360,7 @@ node_setup() {
   sudo -i -u vagrant bash install.sh
   rm install.sh
 
-  source "~vagrant/.nvm/nvm.sh"
+  source "/home/vagrant/.nvm/nvm.sh"
 
   # Install Node stable
   echo "Installing Node stable"
@@ -604,15 +604,25 @@ rvm_setup() {
     sudo gpg -q --no-tty --batch --keyserver "hkp://keyserver.ubuntu.com:80" --recv-keys BF04FF17
 
     printf " * RVM [not installed]\n Installing from source"
-    sudo curl --silent -L "https://get.rvm.io" | bash -s stable --ruby
+    sudo curl --silent -L "https://get.rvm.io" | bash -s stable
     source "/usr/local/rvm/scripts/rvm"
 
     # Add the vagrant user to the RVM group
     usermod -a -G rvm vagrant
+    if sudo grep -q secure_path /etc/sudoers; then 
+      sudo sh -c "echo export rvmsudo_secure_path=1 >> /etc/profile.d/rvm_secure_path.sh" && 
+        echo Environment variable installed; 
+    fi
+
   fi
 
+  # Install Ruby
+  rvm install ruby
+  rvm --default use ruby
+
   # Install bundler gem
-  gem install bundler
+  gem install bundler --no-rdoc --no-ri
+  gem install rails
 }
 
 mailcatcher_setup() {

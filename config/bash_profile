@@ -21,6 +21,10 @@ if [ -n "$BASH_VERSION" ]; then
     fi
 fi
 
+
+# RVM
+[[ -s "/usr/local/rvm/scripts/rvm" ]] && source "/usr/local/rvm/scripts/rvm"
+
 # set PATH so it includes user's private bin if it exists
 if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"

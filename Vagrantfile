@@ -135,6 +135,9 @@ Vagrant.configure("2") do |config|
   # If a log directory exists in the same directory as your Vagrantfile, a mapped
   # directory inside the VM will be created for some generated log files.
   config.vm.synced_folder "log/", "/srv/log", :owner => "vagrant", :group => "www-data"
+  config.vm.synced_folder "log/apache2", "/var/log/apache2", :owner => "vagrant", :group => "www-data"
+  #config.vm.synced_folder "log/nginx", "/var/log/apache2/", :owner => "vagrant", :group => "www-data"
+
 
   # /srv/www/
   #
@@ -184,6 +187,7 @@ Vagrant.configure("2") do |config|
     config.vm.provision :shell, :path => File.join("provision", "provision.sh")
   end
 
+  
   # provision-post.sh acts as a post-hook to the default provisioning. Anything that should
   # run after the shell commands laid out in provision.sh or provision-custom.sh should be
   # put into this file. This provides a good opportunity to install additional packages
